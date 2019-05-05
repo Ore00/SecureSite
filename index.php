@@ -11,19 +11,16 @@ $sPhone = trim(implode($phone));
 //$value = $sPhone;
 //echo substr($value, 0, 3) . "-". substr($value, 3, 4);escapeString(
 
+global $user;
 $user = new User;
-$user->set_userName("tester2");
-
-$user->set_password();
-
-echo "User: " . $user->get_userName() . "\n";
-echo "Password: " . $user->get_password() . "\n";
-echo "Key: ";
- $user->email_key();
-echo "\n";
-$newUser = $user->create_User();
-var_dump($newUser); ($value == NULL) ? 'CURRENT_TIMESTAMP' : $value;
-//var_dump($user->lookupUser(1));
+$valid = $user->validate_User("tester10", "A5gRjyvq7C");
+var_dump($valid);
+var_dump($user);
+//$user->set_userName("tester10");
+//$user->set_password();
+//$result = $user->create_User();
+//$user->lookup_User($result['Success']);
+//var_dump($user);
 
 
 ?>

@@ -2,9 +2,6 @@
 /**
 * User: create, Update(password), Yiew, Generate User password, Email user password
 *
-* Profile: create(first name, last name, email, mobile), Update, view
-*
-*Roles:
 */
 if(!class_exists("DBQuery")){
   require_once(Base_Path .'/vendor/DBQuery.php');
@@ -74,7 +71,7 @@ class User{
   function get_revoked(){
     return $this->revoked;
   }
-  private static function set_User($data){
+  private function set_User($data){
     self::set_userId($data['userId']);
     self::set_userName($data['userName']);
     self::set_password($data['password']);
@@ -84,8 +81,8 @@ class User{
   }
   function create_User(){
         /*create a new user within the user's table
-        * if an error occurs, the Error variable is set and return
-        * if no error, user id is returned with data array
+        * if an error occurs, the Error variable is set and return within the results array
+        * if no error, user id is returned within the results array
         */
     $error = NULL;
     $insertId = NULL;
@@ -116,7 +113,7 @@ class User{
                 $val = implode(", ", $valueArray);
               $sql = "INSERT INTO ss_users ( $col ) values ( $val )";
               $connection->query($sql);
-            
+
               $error = $connection->sql_error();
               if($connection->sql_error() == false){
                   $insertId = $connection->lastInsertedID();
@@ -135,14 +132,82 @@ class User{
     return $resultArray;
   }
   function update_User(){
+    $error = NULL;
+    $affectedRows = NULL;
+    $userId = self::get_userId();
+    $userName = self::get_userName();
+    $password = self::get_password();
+    self::set_dateUpdated();
+    $updated = self::get_dateUpdated();
+    self::set_revoked();
+    $revoked = self::get_revoked();
 
+    if( $userName != "" && $password != ""){
+      $connection = new DBQuery();
+      if($connection->sql_error()  == false){
+          $sql = "UPDATE `ss_users` SET `userName` = '" . $userName  .  "',  `password` = '" . $password  .  "' ,  `dateUpdated` = '" . $updated  .  "',  `revoked` = '" . $revoked  .  "'
+            WHERE `userId` = $userId";
+
+            $connection->link->query($sql);
+            //check to see if the sql error
+            if($con->sql_error() == false){
+                  $affectedRows = $connnection->affectedRows();
+            }else{
+              $error = $connection->sql_error();
+            }
+
+      }else{
+          $error = $connection->sql_error();
+      }
+    }else{
+      $error = "username and/or password must not be NULL";
+    }
+    $resultArray = array( "Error" => $error, "Success" => $affectedRows);
+    return $resultArray;
   }
-  function validate_User($userName, $Password){
+  function validate_User($userName, $password){
+    /*if user name and password are located, the user class variables are set to the database values & results in userValid = true
+    /* else results in userValid = false
+    * if an error occurs, the Error variable is set and return within result array
+    */
+    $connection = new DBQuery();
+    $userValid = False;
+    $error = NULL;
 
+    if(trim($userName) != "" || trim($Password) != "")
+    {
+        $pwd = md5($password);
+        $connection = new DBQuery;
+        if($connection->sql_error() == false){
+          $sql = "SELECT * FROM `ss_users` where `userName` = '$userName' and `password` = '$pwd'";
+          $result = $connection->query($sql);
+          if($connection->sql_error() == false){
+             if( $connection->numRows($result) == 1)
+             {
+               $data = $connection->fetchAssoc($result);
+               //set user variables
+               self::set_User($data);
+               $userValid = True;
+             }else{
+               $error = "User name or password is invalid.";
+             }
+             $connection->freeResult($result);
+          }else{
+             $error = $connection->sql_error();
+          }
+        }
+
+        $connection->close();
+    }else {
+      $error = "user name and password are required.";
+    }
+    $resultArray = array("Error" => $error, "Success" => $userValid);
+
+    return $resultArray;
   }
   function lookup_User($userId=NULL){
-    /*if user id is located, the user class variables are set
-    * if an error occurs, the Error variable is set and return within the user results
+    /*if user id is located, the user class variables are set to the database values
+    * if an error occurs, the Error variable is set and return within result array
     */
     $connection = new DBQuery();
     $userFound = False;
@@ -158,6 +223,7 @@ class User{
              if( $connection->numRows($result) > 0)
              {
                $data = $connection->fetchAssoc($result);
+
                self::set_User($data);
                $userFound = True;
              }else{
@@ -190,77 +256,6 @@ class User{
     }
     return $key;
   }
-
-}
-
-class Profile extends User{
-  protected $userId;
-  protected $firstName;
-  protected $lastName;
-  protected $email;
-  protected $mobile;
-
-  function set_firstName($value){
-    $this->firstName = trim($value);
-  }
-  function get_firstName(){
-    return $this->firstName;
-  }
-  function set_lastName($value){
-    $this->lastName = trim($value);
-  }
-  function get_lastName(){
-    return $this->lastName;
-  }
-  function set_email($value){
-    $this->email = trim($value);
-  }
-  function get_email(){
-   return $this->email;
-  }
-  function set_mobile($value){
-   $this->mobile = trim($value);
- }
-  function get_mobile(){
-    return $this->mobile;
-  }
- function validate_email(){
-   //Verify STMP okay via api
-   return $isValid;
- }
- function strip_phone($value){
-   //return only the digits in the phone number
-   $phone = preg_split("/[\D]+/", $value);
-   return trim(implode($phone));
- }
- function format_phone($value){
-   //Format the phone
-   $value = $this->strip_phone(trim($value));
-   $len = strlen($value);
-
-   switch($len){
-     case 11:
-     $phone = substr($value, 0, 1) . " (" . substr($value, 1, 3) . ") " . substr($value, 4, 3) . "-". substr($value, 7, 4);
-     break;
-     case 10:
-     $phone = "(" . substr($value, 0, 3) . ") " . substr($value, 3, 3) . "-". substr($value, 6, 4);
-     break;
-     case 7:
-     $phone = substr($value, 0, 3) . "-". substr($value, 3, 4);
-     break;
-     default:
-     $phone = $value;
-   }
-   return $phone;
- }
-
- function create_profile(){
-   //save user profile in the database
- }
- function update_profile(){
-   //update user profile in the database
-
- }
 
 }
 
