@@ -9,3 +9,16 @@ CREATE TABLE IF NOT EXISTS `ss_users` (
   PRIMARY KEY (`userId`),
   UNIQUE KEY `userName` (`userName`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+DROP TABLE IF EXISTS `ss_profile`;
+CREATE TABLE IF NOT EXISTS `ss_profile` (
+  `profileId` int(6) NOT NULL AUTO_INCREMENT,
+  `userId` int(6) NOT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `lastName` varchar(50) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `mobile` varchar(20),
+  PRIMARY KEY (`profileId`),
+  FOREIGN KEY `userId` (`userId`)
+  REFERENCES `ss_user`(`userId`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;

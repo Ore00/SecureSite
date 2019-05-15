@@ -15,6 +15,7 @@ class User{
   private $dateCreated;
   private $dateUpdated;
   private $revoked;
+  private $loggedIn;
 
   function User($userId = NULL){
     if($userId != NULL){
@@ -65,13 +66,21 @@ class User{
   function get_dateUpdated(){
     return $this->dateUpdated;
   }
-  function set_revoked($value=0){
+  function set_revoked($value = 0){
+    //0 false 1 true
     $this->revoked = $value;
   }
   function get_revoked(){
     return $this->revoked;
   }
-  private function set_User($data){
+  private static function set_loggedIn($value = False){
+    $this->loggedIn =$value;
+  }
+  function get_loggedIn($value = False){
+    return $this->loggedIn;
+  }
+  protected function set_User($data){
+
     self::set_userId($data['userId']);
     self::set_userName($data['userName']);
     self::set_password($data['password']);
@@ -139,7 +148,6 @@ class User{
     $password = self::get_password();
     self::set_dateUpdated();
     $updated = self::get_dateUpdated();
-    self::set_revoked();
     $revoked = self::get_revoked();
 
     if( $userName != "" && $password != ""){
@@ -150,8 +158,8 @@ class User{
 
             $connection->link->query($sql);
             //check to see if the sql error
-            if($con->sql_error() == false){
-                  $affectedRows = $connnection->affectedRows();
+            if($connection->sql_error() == false){
+                  $affectedRows = $connection->affectedRows();
             }else{
               $error = $connection->sql_error();
             }
@@ -179,7 +187,7 @@ class User{
         $pwd = md5($password);
         $connection = new DBQuery;
         if($connection->sql_error() == false){
-          $sql = "SELECT * FROM `ss_users` where `userName` = '$userName' and `password` = '$pwd'";
+          $sql = "SELECT * FROM `ss_users` where `userName` = '$userName' and `password` = '$pwd' and `revoked` = 0";
           $result = $connection->query($sql);
           if($connection->sql_error() == false){
              if( $connection->numRows($result) == 1)
@@ -188,8 +196,10 @@ class User{
                //set user variables
                self::set_User($data);
                $userValid = True;
+               self::set_loggedIn($userValid);
              }else{
                $error = "User name or password is invalid.";
+               self::set_loggedIn($userValid);
              }
              $connection->freeResult($result);
           }else{
@@ -243,9 +253,7 @@ class User{
 
     return $resultArray;
   }
-  function revoke_User($userId=NULL){
 
-  }
   private static function generateKey() {
     $length = 10;
     $chars='1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
