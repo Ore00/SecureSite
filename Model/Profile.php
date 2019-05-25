@@ -131,6 +131,7 @@ class Profile extends User{
                 //$error = $connection->sql_error();
                 if($connection->sql_error() == false){
                   $insertId = $connection->lastInsertedID();
+                  self::set_profileId($insertId);
                 }else{
                   $error = $connection->sql_error();
                 }
