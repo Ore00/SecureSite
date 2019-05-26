@@ -109,8 +109,9 @@ class Profile extends User{
 
     $check = parent::lookup_User($userId);
     $profileExist = self::lookup_profile($userId);
+    $emailExist = self::lookup_email($email);
 
-    if($check['Success'] != False && $profileExist['Success'] == False){
+    if($check['Success'] != False && $profileExist['Success'] == False && $emailExist == False){
 
           if($userId != NULL || $firstName != NULL ||  $lastName != NULL || $email != NULL)
           {
@@ -147,11 +148,14 @@ class Profile extends User{
          if($check['Success'] == False )
          {
             $error = "User ID " . $userId . " not found. The user ID must exist before a profile can be created.";
-          }
-          if($profileExist['Success'] != False)
+         }
+        if($profileExist['Success'] != False)
           {
             $error = "User Id " . $userId . " already has a profile, update the existing user profile.";
           }
+        if($emailExist['Success'] != False){
+          $error = "Email " . $email . " is associated with another user.";
+       }
     }
     $resultArray = array( "Error" => $error, "Success" => $insertId);
     return $resultArray;
@@ -230,6 +234,44 @@ class Profile extends User{
       $connection->close();
     }else {
       $error = "Search incomplete because the user id is missing.";
+    }
+    $resultArray = array("Error" => $error, "Success" => $userFound);
+
+    return $resultArray;
+  }
+  function lookup_email($email=NULL){
+    /*if user id is located, the profile class variables are set to the database values
+    * if an error occurs, the Error variable is set and return within result array
+    */
+    $connection = new DBQuery();
+    $userFound = False;
+    $error = NULL;
+
+    if($email != NULL || $email != "")
+    {
+      $connection = new DBQuery;
+      if($connection->sql_error() == false){
+        $sql = "SELECT *, `a`.`userId` as `userId` FROM `ss_users` `a` join `ss_profile` `b`  on `a`.`userId` = `b`.`userId` where `b`.`email` = '$email'";
+
+        $result = $connection->query($sql);
+        if($connection->sql_error() == false){
+          if( $connection->numRows($result) > 0)
+          {
+            $data = $connection->fetchAssoc($result);
+            $userFound = True;
+            $connection->freeResult($result);
+          }else{
+            $error = "Email " . $email. " not found.";
+          }
+
+        }else{
+          $error = $connection->sql_error();
+        }
+      }
+
+      $connection->close();
+    }else {
+      $error = "Search incomplete because the email is missing.";
     }
     $resultArray = array("Error" => $error, "Success" => $userFound);
 

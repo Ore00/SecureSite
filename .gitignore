@@ -1,1 +1,2 @@
-vendor
+vendor/api_settings.inc
+env.inc
