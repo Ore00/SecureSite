@@ -62,7 +62,7 @@ class apiConnector{
   function get_API_URL(){
     return $this->API_URL;
   }
-  function set_authNonce($secret, $chars, $seconds=60, $delimitar="-"){    
+  function set_authNonce($secret, $chars, $seconds=60, $delimitar="-"){
     require_once("NonceUtil.php");
     $this->authNonce = customNonce::generate( $secret, $chars, $seconds, $delimitar);
   }
@@ -159,7 +159,7 @@ class apiConnector{
     $this->set_encoding();
   }
   function requireDefaultSSL(){
-    if(!isset(apiConnectorCertificate)){ require_once("api_settings.inc"); }
+    if(apiConnectorCertificate != NULL){ require_once("api_settings.inc"); }
     $this->set_certFile(apiConnectorCertificate);
     $this->set_keyFile(apiConnectorKey);
     $this->set_authUserId(apiConnectorUserId);

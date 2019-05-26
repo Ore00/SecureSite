@@ -111,7 +111,7 @@ class Profile extends User{
     $profileExist = self::lookup_profile($userId);
     $emailExist = self::lookup_email($email);
 
-    if($check['Success'] != False && $profileExist['Success'] == False && $emailExist == False){
+    if($check['Success'] != False && $profileExist['Success'] == False && $emailExist['Success'] == False){
 
           if($userId != NULL || $firstName != NULL ||  $lastName != NULL || $email != NULL)
           {
