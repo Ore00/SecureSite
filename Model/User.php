@@ -37,12 +37,10 @@ class User{
   private function set_key(){
     $this->key = self::generateKey();
   }
-  private function get_key(){
+  protected function get_key(){
     return $this->key;
   }
-  function email_key(){// update to send key vial email
-    echo self::get_key();
-  }
+
   function set_password($value = NULL){
     if($value == NULL){
       self::set_key();
