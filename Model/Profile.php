@@ -1,9 +1,13 @@
 <?php
-require_once("User.php");
+
 /**
 * Profile: create(first name, last name, email, mobile), Update, view
 *
 */
+require_once("includes/web_settings.inc");
+require_once("User.php");
+require_once("SecureSiteMail.php");
+
 class Profile extends User{
   protected $profileId;
   protected $firstName;
@@ -48,7 +52,6 @@ class Profile extends User{
   }
   function validate_email_smtp(){
     //Verify STMP okay via api
-    //require_once("..vendor/apiConnector.php");
     require_once("includes/web_settings.inc");
     $email = self::get_email();
     $data = array();
@@ -56,7 +59,7 @@ class Profile extends User{
     $url = "http://apilayer.net/api/check?access_key=". $key ."&email=".$email;
     $api = new apiConnector($data, $url, "application/json", False);
     $response = $api->post_to_api($api->get_apiHeaders(), True);
-    $decoded = json_decode($response, true);
+    $decoded = gettype($response == "string") ? json_decode($response, true) : print_r($response, true);
     $isValid = (isset($decoded['smtp_check'])) ? $decoded['smtp_check'] : $decoded['Error Message'];
     return $isValid;
   }
@@ -277,6 +280,34 @@ class Profile extends User{
 
     return $resultArray;
   }
+  function email_temporaryKey(){
+    Try{
+
+        //let the system generate a temporary
+        parent::set_password();
+        $reset = parent::update_User();
+        if($reset != NULL){
+            $sendMail = new SecureSiteMail($this->get_firstName(), $this->get_email());
+            $emailSubject = "Account information";
+            //set the email message for the user
+            $messageBody = "<p>Hi " . $this->get_userName() . ",<br>";
+            $messageBody .= "Your temporary access key is " . parent::get_key() . "</p><br>";
+
+            $emailBody = $sendMail->emailTemplate( $messageBody );
+            $result = $sendMail->send_email( $emailSubject, $emailBody, true);
+        }else{
+            $result = array("Error" => "Temporary key not sent because the user password reset was unsucessful. ", "Success" => NULL);
+        }
+        return $result;
+
+      }catch (Exception $e) {
+          $resultArray = array("Error" => $e->getMessage(), "Success" => $msg);
+          return $resultArray;
+      }
+   }
+
+
+
 }
 
 ?>

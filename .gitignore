@@ -1,2 +1,9 @@
+#ignore files
 vendor/api_settings.inc
+includes/web_settings.inc
 env.inc
+
+#ignore folders
+vendor/phpunit/
+vendor/composer/
+vendor/bin/
