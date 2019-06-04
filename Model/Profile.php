@@ -56,11 +56,15 @@ class Profile extends User{
     $email = self::get_email();
     $data = array();
     $key = secure_mailBoxLayerKey;
-    $url = "http://apilayer.net/api/check?access_key=". $key ."&email=".$email;
-    $api = new apiConnector($data, $url, "application/json", False);
-    $response = $api->post_to_api($api->get_apiHeaders(), True);
-    $decoded = gettype($response == "string") ? json_decode($response, true) : print_r($response, true);
-    $isValid = (isset($decoded['smtp_check'])) ? $decoded['smtp_check'] : $decoded['Error Message'];
+    $isValid = NULL;
+    if($email != NULL && trim($email) != ""){
+        $url = "http://apilayer.net/api/check?access_key=". $key ."&email=".$email;
+        $api = new apiConnector($data, $url, "application/json", False);
+        $response = $api->post_to_api($api->get_apiHeaders(), True);
+        $decoded = gettype($response == "string") ? json_decode($response, true) : print_r($response, true);
+        if(isset($decoded['smtp_check'])){ $isValid = $decoded['smtp_check'];}
+        if(isset($decoded['Error Message'])){ $isValid = $decoded['Error Message'];}
+      }
     return $isValid;
   }
   function strip_phone($value){
@@ -176,9 +180,9 @@ class Profile extends User{
     $lastName = self::get_lastName();
     $email = self::get_email();
     $mobile = self::get_mobile();
+    $emailExist = self::lookup_email($email);
 
-
-    if( $profileId != NULL){
+    if( $profileId != NULL && $emailExist['Success'] == False){
       $connection = new DBQuery();
       if($connection->sql_error()  == false){
         $sql = "UPDATE `ss_profile` SET `firstName` = '" . $firstName  .  "', `lastName` = '" . $lastName  .  "',  `email` = '" . $email  .  "' ,  `mobile` = '" . $mobile  .  "'
@@ -196,7 +200,13 @@ class Profile extends User{
         $error = $connection->sql_error();
       }
     }else{
-      $error = "Error: profile id is NULL.";
+          if($profileId == NULL )
+          {
+               $error .= "Error: profile id is NULL." ;
+          }
+         if($emailExist['Success'] != False){
+              $error .= "Email " . $email . " is associated with another user. ";
+         }
     }
     $resultArray = array( "Error" => $error, "Success" => $affectedRows);
     return $resultArray;
@@ -280,20 +290,20 @@ class Profile extends User{
 
     return $resultArray;
   }
-  function email_temporaryKey(){
+  function email_temporaryKey($key = NULL){
     Try{
 
         //let the system generate a temporary
-        parent::set_password();
+        parent::set_password($key);
         $reset = parent::update_User();
         if($reset != NULL){
             $sendMail = new SecureSiteMail($this->get_firstName(), $this->get_email());
             $emailSubject = "Account information";
             //set the email message for the user
-            $messageBody = "<p>Hi " . $this->get_userName() . ",<br>";
-            $messageBody .= "Your temporary access key is " . parent::get_key() . "</p><br>";
+            $messageBody = "<p>Hi " . $this->get_userName() . ",</p><br><br>";
+            $messageBody .= "<p>Your temporary access key is " . parent::get_key() . "</p><br>";
 
-            $emailBody = $sendMail->emailTemplate( $messageBody );
+            $emailBody = $sendMail->emailTemplateBasic( $messageBody );
             $result = $sendMail->send_email( $emailSubject, $emailBody, true);
         }else{
             $result = array("Error" => "Temporary key not sent because the user password reset was unsucessful. ", "Success" => NULL);

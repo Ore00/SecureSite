@@ -45,6 +45,8 @@ class User{
     if($value == NULL){
       self::set_key();
       $value = self::get_key();
+    }else{
+      $this->key = $value;
     }
     $this->password = md5($value);
   }
@@ -71,11 +73,14 @@ class User{
   function get_revoked(){
     return $this->revoked;
   }
-  private static function set_loggedIn($value = False){
-    $this->loggedIn =$value;
+  private function set_loggedIn($value = False){
+    $this->loggedIn = $value;
   }
-  function get_loggedIn($value = False){
+  function get_loggedIn(){
     return $this->loggedIn;
+  }
+  function log_out(){
+    $this->loggedIn = (bool)false;
   }
   protected function set_User($data){
 
@@ -253,6 +258,40 @@ class User{
     return $resultArray;
   }
 
+  function lookup_userName($userName=NULL){
+    /*search user table to see if user name exist
+    * if an error occurs, the Error variable is set and return within result array
+    */
+    $connection = new DBQuery();
+    $userFound = False;
+    $error = NULL;
+
+    if($userName != NULL || $userName != "")
+    {
+        $connection = new DBQuery;
+        if($connection->sql_error() == false){
+          $sql = "SELECT * FROM `ss_users` where userName ='" . $userName . "'";
+          $result = $connection->query($sql);
+          if($connection->sql_error() == false){
+             if( $connection->numRows($result) > 0)
+             {
+               $data = $connection->fetchAssoc($result);
+               $userFound = True;
+             }
+
+          }else{
+             $error = $connection->sql_error();
+          }
+        }
+        $connection->freeResult($result);
+        $connection->close();
+    }else {
+      $error = "Search incomplete: user name is missing.";
+    }
+    $resultArray = array("Error" => $error, "Success" => $userFound);
+
+    return $resultArray;
+  }
   private static function generateKey() {
     $length = 10;
     $chars='1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';

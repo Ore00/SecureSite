@@ -1,0 +1,109 @@
+@import url("font-awesome.min.css");
+@import url("sandoval-rims-brand.css");
+
+body {
+    background: rgba(138, 58, 100, 0.025) !important;
+    font-family: 'Roboto', Helvetica, sans-serif;
+    font-weight: 100;
+    font-size: 12pt;
+    line-height: 1.5em;
+    color: #4d4d4d;
+    -webkit-text-stroke: 0.1px;
+    margin: 0;
+}
+
+a:link, a:visited   {
+    color: #6e3a8a !important;
+    text-decoration: underline;
+}
+
+a:hover  {
+    color: rgba(138, 58, 110, 0.75) !important;
+    text-decoration: underline !important;
+}
+
+table {
+    margin: 15px 5px;
+    width: 600px !important;
+}
+
+.header {
+    background: rgba(110, 58, 138, 1);
+    padding: 25px 30px;
+    text-align: center;
+    border-bottom-style: solid;
+    border-bottom-width: 10px;
+    border-bottom-color: #6e3a9a;
+    color: #fff;
+    line-height: 2em;
+}
+
+.content{
+    padding: 60px 25px;
+    text-align: left;
+    background: #fff;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-left-color: #f2f2f2;
+    border-right-color: #f2f2f2;
+}
+
+.footer {
+   background: rgba(110, 58, 138, 1);
+   text-align: center;
+    padding: 25px 0 !important;
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: #f2f2f2;
+    color: #fff;
+}
+
+.emailLogo {
+    display: block;
+    margin: 0 auto;
+    width: auto !important;
+    height: 35px !important;
+    font-size: 16px;
+}
+
+.rims {
+    margin: auto;
+    width: auto;
+    height: 15px !important;
+    padding: 50px 5px;
+    display: block;
+}
+
+.rims-inverted {
+    font-family: sandovalregular;
+    letter-spacing: -0.25px;
+    color: rgba(244, 244, 244, 0.20);
+    text-transform: uppercase;
+}
+#social {
+    text-align: center !important;
+}
+
+#social a:link,
+#social a:visited  {
+    display: inline-block;
+    text-decoration: none;
+    color: rgba(244, 244, 244, 1) !important;   
+}
+#social a:hover  {
+    text-decoration: none;
+    color: rgba(244, 244, 244, 0.75) !important;   
+}
+
+
+@media screen and (max-width: 428px) {
+    .emailLogo {
+        text-align: center;
+        display: block;
+        margin: 0 auto;
+        width: 60% !important;
+        height: auto;
+    }
+}

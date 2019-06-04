@@ -6,10 +6,10 @@
 */
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-require 'vendor/phpmailer/phpmailer/src/Exception.php';
-require 'vendor/phpmailer/phpmailer/src/PHPMailer.php';
-require 'vendor/phpmailer/phpmailer/src/SMTP.php';
+//require_once("../env.inc");
+require Base_Path . '/vendor/phpmailer/phpmailer/src/Exception.php';
+require Base_Path . '/vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require Base_Path . '/vendor/phpmailer/phpmailer/src/SMTP.php';
 require_once('includes/web_settings.inc');
 class SecureSiteMail{
 
@@ -87,11 +87,10 @@ class SecureSiteMail{
   function emailTemplate($message = "Put Message Here!"){
 
       $msg = "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8' /><meta name='viewport' content='width=device-width, initial-scale=1'>";
-      // $msg .="<link rel='stylesheet' href='";
-      // $msg .= $Domain;
-      // $msg .= $sDir;
-      // $msg .= "css/email.css'/>";
-      $msg .= "<title>User Notification</title><style></style></head>";
+      $msg .="<link rel='stylesheet' href='";
+      $msg .= $this->get_SiteUrl();
+      $msg .= "/View/css/email.css'/>";
+      $msg .= "<title>" . $this->get_siteName() . " Notification</title><style></style></head>";
       $msg .= "<body style='background: rgba(138, 58, 100, 0.025) !important; font-family: Roboto, Helvetica, sans-serif; font-weight: 100; font-size: 12pt; line-height: 1.5em; color: #4d4d4d; -webkit-text-stroke: 0.1px;' >";
       $msg .= "<table style='margin: 25px auto; border-collapse: collapse; border-spacing: 5; width: 600px  !important;'>";
       $msg .= "<tr style='background:#6e3a8a; color:#ffffff; text-align: center; border-bottom-style: solid; border-bottom-color: #6e3a8a line-height: 2em;'>";
@@ -109,12 +108,76 @@ class SecureSiteMail{
       $msg .="<tr><td id='emailFooter' style='background: #6e3a8a; text-align: center; padding: 15px !important;'>";
       $msg .="</td></tr>";
       $msg .="<tr><td style='text-align: center;  padding: 25px; font-size: 10px;'><span>";
-      $msg .="Powered By <a href='" . $this->get_siteUrl() ."' target='_blank' rel='noopener noreferrer'>RIMS</a>. </span></td></tr>";
+      $msg .="
+      <a href='" . $this->get_siteUrl() ."' target='_blank' rel='noopener noreferrer'>RIMS</a>. </span></td></tr>";
       $msg .="</table></body></html>";
 
         $this->set_message( $msg );
         return $this->get_message();
     }
+  function emailTemplateBasic($message = "Put Message Here"){
+        $msg = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+        <html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+        <head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>";
+        $msg .="<link rel='stylesheet' href='";
+        $msg .= $this->get_SiteUrl();
+        $msg .= "/View/css/email.css'/>";
+        $msg .= "<title>" . $this->get_siteName() . " Notification</title>";
+        $msg .="<style>
+       body {
+         font-family: Arial, Helvetica, sans-serif;
+         color: #000000;
+         margin: 0 10 0 10;
+       }
+
+       form {
+         border: 3px solid #f1f1f1;
+         font-family: Arial;
+
+       }
+       header,footer{
+         text-align: center;
+         background-color: #6E3A8A;
+         padding: 20px;
+       }
+
+       a:link, a:visited, a:hover, a:active {
+         color: #000000;
+         text-decoration: none;
+       }
+       .container {
+         padding: 20px;
+         background-color: #FDFCFE;
+         min-height: 300px;
+         color: #000000;
+       }
+       </style>";
+       $msg .= "</head>";
+       $msg .= "<body>
+         <header id='email_header' style='text-align: center;
+          background-color: #6e3a8a;
+          padding: 20px;'>
+           <h2>" . $this->get_siteName() ."</h2>
+         </header>";
+       $msg .= "<div class='container' style='padding: 20px;
+       background-color: #ffffff;
+       min-height: 300px;
+       color: #000000;'>
+         " . $message . "
+       </div>";
+
+       $msg .= "<footer id='email_footer' style='text-align: center;
+        background-color: #6e3a8a;
+        padding: 20px;'>
+         Powered By <a href='" . $this->get_siteUrl() ."' target='_blank' rel='noopener noreferrer'>RIMS</a>
+       </footer>
+       </body>
+       </html>";
+
+        $this->set_message( $msg );
+        return $this->get_message();
+  }
 }
 
  ?>
