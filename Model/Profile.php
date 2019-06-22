@@ -303,7 +303,7 @@ class Profile extends User{
             $messageBody = "<p>Hi " . $this->get_userName() . ",</p><br><br>";
             $messageBody .= "<p>Your temporary access key is " . parent::get_key() . "</p><br>";
 
-            $emailBody = $sendMail->emailTemplateBasic( $messageBody );
+            $emailBody = $sendMail->emailTemplateDefault( $messageBody );
             $result = $sendMail->send_email( $emailSubject, $emailBody, true);
         }else{
             $result = array("Error" => "Temporary key not sent because the user password reset was unsucessful. ", "Success" => NULL);

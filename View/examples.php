@@ -36,7 +36,7 @@ form {
 header,footer{
   text-align: center;
   background-color: #6e3a8a;
-  padding: 20px;
+  padding: 10px;
   color: #FFFFFF;
 }
 
@@ -150,15 +150,15 @@ a:link, a:visited, a:hover, a:active {
           </code>
           <h3>Send User Temporary Access Code</h3>
           <code>
-            //if user email has a valid smtp send the user a temporary access key<br><br>
+            //if user email has a valid smtp, send the user a temporary access key<br><br>
            if($eStatus == true){<br>
-             echo"Start email temp key." . PHP_EOL;<br>
+             echo"Start emailing temp key." . PHP_EOL;<br>
              $sendKey = $user->email_temporaryKey("MyCustomPassword");<br>
            }<br>
          </code>
          <hr>
          <code class="success">
-           Start email temp key.<br>
+           Start emailing temp key.<br>
          </code>
             <h3>Examples using the User Class</h3>
             <h5>Validate User</h5>
