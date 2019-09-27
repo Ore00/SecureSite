@@ -1,11 +1,7 @@
 <?php
 Try{
-//error_reporting('E_NONE');
+error_reporting('E_NONE');
 
-require_once("../env.inc");
-require Base_Path . "/vendor/autoload.php";
-require_once(Base_Path . "/vendor/apiConnector.php");
-require_once(Base_Path . "/Model/Profile.php");
 }
 catch(Exception $e)
 {

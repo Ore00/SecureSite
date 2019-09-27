@@ -1,9 +1,10 @@
 <?php
 /**
-* User: create, Update(password), Yiew, Generate User password, Email user password
+* User: create, Update(password), View, Generate User password, Email user password
 *
 */
 if(!class_exists("DBQuery")){
+  //require_once($_SERVER['DOCUMENT_ROOT'].'vendor/DBQuery.php');
   require_once(Base_Path .'/vendor/DBQuery.php');
   }
 class User{
